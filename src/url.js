@@ -1,2 +1,2 @@
-export const url = "http://localhost:3000"
-export const imageFolder = "http://localhost:3000/images/"
+export const url = import.meta.env.VITE_BACKEND_URL
+export const imageFolder = import.meta.env.VITE_Image_Folder
