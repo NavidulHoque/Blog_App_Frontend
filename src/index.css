@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: "joti-regular";
+    src: url("./fonts/JotiOne-Regular.ttf");
+}
+
+@font-face {
+    font-family: "fredoka-regular";
+    src: url("./fonts/Fredoka-Regular.ttf");
+}
