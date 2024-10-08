@@ -32,6 +32,15 @@ const CreatePost = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  useEffect(() => {
+
+    return () => {
+      localStorage.setItem("titleOfBlogApp", JSON.stringify(""))
+      localStorage.setItem("descriptionOfBlogApp", JSON.stringify(""))
+      localStorage.setItem("categoriesOfBlogApp", JSON.stringify([]))
+    }
+  }, [])
+
 
   useEffect(() => {
 
@@ -40,7 +49,7 @@ const CreatePost = () => {
       const url = URL.createObjectURL(imageFile)
       setImageURL(url)
 
-      return () => URL.revokeObjectURL(url);
+      return () => URL.revokeObjectURL(url)
     }
 
     else if (!imageFile?.type?.startsWith("image") && imageFile) {
