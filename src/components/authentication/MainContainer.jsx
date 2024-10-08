@@ -2,7 +2,7 @@
 
 const MainContainer = ({children}) => {
   return (
-    <div className="flex justify-center items-center h-[70.7vh]">
+    <div className="flex justify-center items-center h-[72vh]">
       {children}
     </div>
   )

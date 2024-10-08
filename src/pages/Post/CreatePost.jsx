@@ -180,7 +180,7 @@ const CreatePost = () => {
 
 
   return (
-    <div className="min-h-[72vh] py-4">
+    <div className="min-h-[70.7vh] py-[11px]">
 
       <div className="xl:w-[85vw] w-[90vw] mx-auto flex flex-col gap-y-5">
 
@@ -208,7 +208,7 @@ const CreatePost = () => {
 
         <Button
           label="Choose an Image"
-          extraStyle="w-[200px] px-4 py-2"
+          extraStyle="w-[200px] px-4 py-2 text-[20px]"
           handleClick={() => fileRef.current.click()}
           type="button"
         />

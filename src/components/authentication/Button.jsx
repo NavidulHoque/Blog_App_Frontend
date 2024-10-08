@@ -5,7 +5,7 @@ const Button = ({ label, loading }) => {
   return (
     <button 
       type="submit" 
-      className="bg-black disabled:bg-[rgb(50,50,50)] text-white text-[20px] w-full py-[10px] rounded-md cursor-pointer"
+      className="bg-black disabled:bg-[rgb(50,50,50)] text-white text-[22px] w-full py-[10px] rounded-md cursor-pointer"
       disabled={loading}
     >
 

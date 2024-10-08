@@ -18,9 +18,10 @@ import autoResizeTextarea from "../../functions/autoResizeTextArea";
 import errorToast from "../../functions/errorToast";
 import socket from "../../socket";
 import successToast from "../../functions/successToast";
+import { ColorRing } from "react-loader-spinner";
 
 const PostDetails = () => {
-    const [post, setPost] = useState({})
+    const [post, setPost] = useState(null)
     const [comments, setComments] = useState([])
     const [writeComment, setWriteComment] = useState("")
     const [openConfirmationMessage, setOpenConfirmationMessage] = useState(false)
@@ -225,7 +226,7 @@ const PostDetails = () => {
                         navigate("/")
                     }
 
-                    else{
+                    else {
                         throw new Error("")
                     }
                 }
@@ -260,118 +261,131 @@ const PostDetails = () => {
     return (
 
         <>
-            <div ref={scrollRef} className="min-h-[70.7vh] py-6">
 
-                <div className="xl:w-[85vw] w-[90vw] mx-auto">
+            <div ref={scrollRef} className="min-h-[72vh] flex justify-center py-6">
 
-                    <div className="flex flex-col gap-y-5">
+                {post ? (
+                    <div className="xl:w-[85vw] w-[90vw] mx-auto">
 
-                        <div className="flex justify-between items-center gap-x-3">
+                        <div className="flex flex-col gap-y-5">
 
-                            <h1 className="text-[36px] font-semibold sm:text-left text-center">{post?.title}</h1>
+                            <div className="flex justify-between items-center gap-x-3">
 
-                            {isPostBelongsToLoggedInUser && (
+                                <h1 className="text-[36px] font-semibold sm:text-left text-center">{post?.title}</h1>
 
-                                <div className="flex gap-x-2">
+                                {isPostBelongsToLoggedInUser && (
 
-                                    <FaRegEdit
-                                        className="w-[25px] h-[25px] cursor-pointer"
-                                        onClick={() => navigate(`/edit/${postID}`)}
-                                    />
-                                    <MdDelete
-                                        onClick={() => setOpenConfirmationMessage(true)}
-                                        className="w-[25px] h-[25px] cursor-pointer"
-                                    />
+                                    <div className="flex gap-x-2">
 
-                                </div>
-                            )}
+                                        <FaRegEdit
+                                            className="w-[25px] h-[25px] cursor-pointer"
+                                            onClick={() => navigate(`/edit/${postID}`)}
+                                        />
+                                        <MdDelete
+                                            onClick={() => setOpenConfirmationMessage(true)}
+                                            className="w-[25px] h-[25px] cursor-pointer"
+                                        />
 
-                        </div>
-
-                        <div className="flex justify-between items-center font-medium text-green-600">
-
-                            <span>{post?.userInfo?.username}</span>
-
-                            <div className="space-x-2">
-
-                                <span>{new Date(post?.updatedAt).toLocaleDateString() + ","}</span>
-
-                                <span>{new Date(post?.updatedAt).toLocaleTimeString()}</span>
+                                    </div>
+                                )}
 
                             </div>
 
-                        </div>
+                            <div className="flex justify-between items-center font-medium text-green-600">
 
-                        <div
-                            className="w-full md:h-[700px] sm:h-[400px] h-[300px] bg-cover bg-center"
-                            style={{ backgroundImage: `url(${imageFolder + post?.photo})` }}
-                        >
-                        </div>
+                                <span>{post?.userInfo?.username}</span>
 
-                        <p>{post?.description}</p>
+                                <div className="space-x-2">
 
-                        {/* Categories */}
-                        <div className="flex items-center space-x-3">
+                                    <span>{new Date(post?.updatedAt).toLocaleDateString() + ","}</span>
 
-                            <h2 className="font-semibold self-start lg:self-center">Categories:</h2>
+                                    <span>{new Date(post?.updatedAt).toLocaleTimeString()}</span>
 
-                            <div className="flex flex-wrap gap-2">
+                                </div>
 
-                                {post?.categories?.map(category => (
-                                    <Category key={category._id} label={category.name} />
+                            </div>
+
+                            <div
+                                className="w-full md:h-[700px] sm:h-[400px] h-[300px] bg-cover bg-center"
+                                style={{ backgroundImage: `url(${imageFolder + post?.photo})` }}
+                            >
+                            </div>
+
+                            <p>{post?.description}</p>
+
+                            {/* Categories */}
+                            <div className="flex items-center space-x-3">
+
+                                <h2 className="font-semibold self-start lg:self-center">Categories:</h2>
+
+                                <div className="flex flex-wrap gap-2">
+
+                                    {post?.categories?.map(category => (
+                                        <Category key={category._id} label={category.name} />
+                                    ))}
+
+                                </div>
+
+                            </div>
+
+                            {/* Comments */}
+                            <div className="flex flex-col gap-y-3">
+
+                                <h2 className="font-semibold">Comments: </h2>
+
+                                {comments?.map(comment => (
+
+                                    <Comment
+                                        key={comment?.commentID}
+                                        comment={comment}
+                                        user={user}
+                                        isPostBelongsToLoggedInUser={isPostBelongsToLoggedInUser}
+                                        updatedComment={updatedComment}
+                                    />
                                 ))}
 
                             </div>
 
-                        </div>
+                            {/* Write a comment */}
 
-                        {/* Comments */}
-                        <div className="flex flex-col gap-y-3">
+                            <div className="flex space-x-2">
 
-                            <h2 className="font-semibold">Comments: </h2>
-
-                            {comments?.map(comment => (
-
-                                <Comment
-                                    key={comment?.commentID}
-                                    comment={comment}
-                                    user={user}
-                                    isPostBelongsToLoggedInUser={isPostBelongsToLoggedInUser}
-                                    updatedComment={updatedComment}
+                                <textarea
+                                    ref={textareaRef}
+                                    type="text"
+                                    placeholder="Write a comment"
+                                    className="w-full p-4 border-[2px] border-black rounded-lg outline-none resize-none break-words whitespace-normal"
+                                    onChange={(e) => {
+                                        setWriteComment(e.target.value)
+                                        autoResizeTextarea(textareaRef)
+                                    }}
+                                    value={writeComment}
+                                    rows="1"
                                 />
-                            ))}
 
-                        </div>
+                                <Button
+                                    label="Add Comment"
+                                    extraStyle="px-4 h-[70px]"
+                                    handleClick={handleAddComment}
+                                    loading={loadingAddComment}
+                                />
 
-                        {/* Write a comment */}
-
-                        <div className="flex space-x-2">
-
-                            <textarea
-                                ref={textareaRef}
-                                type="text"
-                                placeholder="Write a comment"
-                                className="w-full p-4 border-[2px] border-black rounded-lg outline-none resize-none break-words whitespace-normal"
-                                onChange={(e) => {
-                                    setWriteComment(e.target.value)
-                                    autoResizeTextarea(textareaRef)
-                                }}
-                                value={writeComment}
-                                rows="1"
-                            />
-
-                            <Button
-                                label="Add Comment"
-                                extraStyle="px-4 h-[70px]"
-                                handleClick={handleAddComment}
-                                loading={loadingAddComment}
-                            />
+                            </div>
 
                         </div>
 
                     </div>
-
-                </div>
+                ) : (
+                    <ColorRing
+                        visible={true}
+                        height="100"
+                        width="100"
+                        ariaLabel="color-ring-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="color-ring-wrapper"
+                        colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+                    />
+                )}
 
             </div>
 
