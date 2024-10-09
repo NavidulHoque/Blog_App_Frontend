@@ -33,7 +33,7 @@ const Home = () => {
               "Content-Type": "application/json", //this line solved cors
             },
           })
-          response = await axiosInstance.get(url + `/post/readAllPosts${location.search}`, {withCredentials: true})
+          response = await axiosInstance.get(url + `/post/readAllPosts${location.search}`)
         }
 
         else {
@@ -44,7 +44,7 @@ const Home = () => {
               "Content-Type": "application/json", //this line solved cors
             },
           })
-          response = await axiosInstance.get(url + "/post/readAllPosts", { withCredentials: true })
+          response = await axiosInstance.get(url + "/post/readAllPosts")
         }
 
         if (response.data.status) {
