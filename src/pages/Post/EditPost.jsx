@@ -10,9 +10,10 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { LogOut } from "../../features/slices/userLoginSlice";
 import axios from 'axios';
-import { imageFolder, url } from './../../url';
+import { url } from './../../url';
 import errorToast from "../../functions/errorToast";
 import updatePostReq from "../../functions/updatePostReq";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const EditPost = () => {
 
@@ -37,9 +38,10 @@ const EditPost = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { postID } = useParams()
+  const storage = getStorage();
 
 
-  //generate url to show photo temporarily
+  //generate url to show photoURL temporarily
   useEffect(() => {
 
     if (updatedImageFile?.type?.startsWith("image")) {
@@ -71,7 +73,7 @@ const EditPost = () => {
         if (response.data.status) {
 
           setTitle(response.data.post.title)
-          setCurrentImage(response.data.post.photo)
+          setCurrentImage(response.data.post.photoURL)
           setCategories(response.data.post.categories)
           setDescription(response.data.post.description)
         }
@@ -137,50 +139,53 @@ const EditPost = () => {
     //finally update the post
     else if (updatedImageFile) {
 
-      setLoading(true)
+      if (updatedImageFile.type.startsWith("image")) {
 
-      const formData = new FormData()
-      formData.append("file", updatedImageFile)
+        setLoading(true)
 
-      try {
+        const fileName = `${Date.now()}_${updatedImageFile.name}`
 
-        const responseOfUploadImage = await axios.post(
-          url + '/image/upload',
-          formData,
-          {
-            headers: { 'Content-Type': 'multipart/form-data' },
-            withCredentials: true
+        const storageRef = ref(storage, fileName)
+
+        const uploadTask = uploadBytesResumable(storageRef, updatedImageFile)
+
+        uploadTask.on('state_changed',
+          (snapshot) => {
+
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+
+          },
+          (error) => {
+            errorToast(error.message)
+            setLoading(false)
+          },
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+
+              async function updatePost(downloadURL) {
+
+                await updatePostReq({
+                  postID, 
+                  title, 
+                  description, 
+                  categories, 
+                  updatedImageFile, 
+                  currentImage, 
+                  downloadURL,
+                  setLoading, 
+                  navigate
+                })
+              }
+
+              updatePost(downloadURL)
+            })
           }
         )
-
-        if (responseOfUploadImage.data.status) { 
-          await updatePostReq({
-            postID, 
-            title, 
-            description, 
-            responseOfUploadImage, 
-            categories, 
-            updatedImageFile, 
-            currentImage, 
-            setLoading, 
-            navigate
-          })
-        }
-
-        else {
-          throw new Error(responseOfUploadImage.data.message)
-        }
       }
 
-      catch (error) {
-        errorToast(error.message)
-        setLoading(false)
-
-        if (error.message.toLowerCase().includes("token")) {
-
-          dispatch(LogOut())
-          navigate("/login")
-        }
+      else {
+        errorToast("Invalid file, please choose an image")
       }
     }
 
@@ -216,7 +221,7 @@ const EditPost = () => {
 
         <div
           className="sm:w-[400px] w-[300px] h-[250px] bg-cover bg-center bg-no-repeat rounded-md"
-          style={{ backgroundImage: `url(${updatedImageFile ? imageURL : (imageFolder + currentImage)})` }}
+          style={{ backgroundImage: `url(${updatedImageFile ? imageURL : currentImage})` }}
         >
         </div>
 

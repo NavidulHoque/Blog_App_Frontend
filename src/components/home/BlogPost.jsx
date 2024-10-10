@@ -1,31 +1,16 @@
 /* eslint-disable react/prop-types */
 import { useSelector } from "react-redux"
 import { Link } from "react-router-dom"
-import { imageFolder } from "../../url"
 
 const BlogPost = ({post}) => {
   const user = useSelector(state => state.UserLogin.user)
-  // const [windowInnerWidth, setWindowInnerWidth] = useState(window.innerWidth)
-
-  // useEffect(() => {
-
-  //   const handleResize = () => {
-  //     setWindowInnerWidth(window.innerWidth)
-  //   };
-
-  //   window.addEventListener('resize', handleResize)
-
-  //   return () => window.removeEventListener('resize', handleResize)
-
-  // }, [])
-  
 
   return (
     <div className="flex space-x-3 w-full">
       
       <div 
         className='min-w-[300px] h-[260px] bg-cover bg-center bg-no-repeat rounded-md lg:inline-block hidden'
-        style={{ backgroundImage: `url(${imageFolder + post?.photo})` }}
+        style={{ backgroundImage: `url(${post?.photoURL})` }}
       >
       </div>
 

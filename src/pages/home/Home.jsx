@@ -26,25 +26,11 @@ const Home = () => {
         let response
 
         if (location.search) {
-          const axiosInstance = axios.create({
-            baseURL: url,
-            headers: {
-              "Access-Control-Allow-Origin": "*",
-              "Content-Type": "application/json", //this line solved cors
-            },
-          })
-          response = await axiosInstance.get(url + `/post/readAllPosts${location.search}`)
+          response = await axios.get(url + `/post/readAllPosts${location.search}`)
         }
 
         else {
-          const axiosInstance = axios.create({
-            baseURL: url,
-            headers: {
-              "Access-Control-Allow-Origin": "*",
-              "Content-Type": "application/json", //this line solved cors
-            },
-          })
-          response = await axiosInstance.get(url + "/post/readAllPosts")
+          response = await axios.get(url + "/post/readAllPosts")
         }
 
         if (response.data.status) {

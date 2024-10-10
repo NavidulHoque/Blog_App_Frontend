@@ -10,6 +10,7 @@ import { LogOut } from "../../features/slices/userLoginSlice"
 import { useNavigate } from "react-router-dom"
 import errorToast from "../../functions/errorToast"
 import successToast from "../../functions/successToast"
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const CreatePost = () => {
   const [imageFile, setImageFile] = useState(null)
@@ -31,6 +32,7 @@ const CreatePost = () => {
   const user = useSelector(state => state.UserLogin.user)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const storage = getStorage();
 
   useEffect(() => {
 
@@ -70,6 +72,10 @@ const CreatePost = () => {
       errorToast("Title cannot exceed 100 characters")
     }
 
+    else if (!imageFile) {
+      errorToast("Photo is required")
+    }
+
     else if (categories.length === 0) {
 
       errorToast("At least one category is required")
@@ -88,77 +94,82 @@ const CreatePost = () => {
     //finally create the post
     else {
 
-      setLoading(true)
+      if (imageFile.type.startsWith("image")) {
 
-      const formData = new FormData()
-      formData.append("file", imageFile)
+        setLoading(true)
 
-      try {
+        const fileName = `${Date.now()}_${imageFile.name}`
 
-        const responseOfUploadImage = await axios.post(
-          url + '/image/upload',
-          formData,
-          {
-            headers: { 'Content-Type': 'multipart/form-data' },
-            withCredentials: true
+        const storageRef = ref(storage, fileName)
+
+        const uploadTask = uploadBytesResumable(storageRef, imageFile)
+
+        uploadTask.on('state_changed',
+          (snapshot) => {
+
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+
+          },
+          (error) => {
+            errorToast(error.message)
+            setLoading(false)
+          },
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+
+              async function createPost(downloadURL) {
+
+                try {
+
+                  const response = await axios.post(url + '/post/create',
+                    {
+                      title,
+                      description,
+                      photoURL: downloadURL,
+                      categories: categories.map(category => category.name),
+                      userID: user.id
+                    },
+                    { withCredentials: true })
+
+                  if (response.data.status) {
+
+                    setLoading(false)
+                    successToast(response.data.message)
+
+                    localStorage.setItem("titleOfBlogApp", JSON.stringify(""))
+                    localStorage.setItem("descriptionOfBlogApp", JSON.stringify(""))
+                    localStorage.setItem("categoriesOfBlogApp", JSON.stringify([]))
+
+                    navigate(`/post/${response.data.post.postID}`)
+                  }
+
+                  else {
+                    throw new Error(response.data.message)
+                  }
+                }
+
+                catch (error) {
+
+                  errorToast(error.message)
+                  setLoading(false)
+
+                  if (error.message.toLowerCase().includes("token")) {
+
+                    dispatch(LogOut())
+                    navigate("/login")
+                  }
+                }
+              }
+
+              createPost(downloadURL)
+            })
           }
         )
-
-        if (responseOfUploadImage.data.status) {
-
-          try {
-
-            const responseOfPostCreation = await axios.post(url + '/post/create',
-              {
-                title,
-                description,
-                photo: responseOfUploadImage.data.image,
-                categories: categories.map(category => category.name),
-                userID: user.id
-              },
-              { withCredentials: true })
-
-            setLoading(false)
-
-            if (responseOfPostCreation.data.status) {
-
-              successToast(responseOfPostCreation.data.message)
-
-              localStorage.setItem("titleOfBlogApp", JSON.stringify(""))
-              localStorage.setItem("descriptionOfBlogApp", JSON.stringify(""))
-              localStorage.setItem("categoriesOfBlogApp", JSON.stringify([]))
-
-              navigate(`/post/${responseOfPostCreation.data.post.postID}`)
-            }
-
-            else {
-              throw new Error(responseOfPostCreation.data.message)
-            }
-          }
-
-          catch (error) {
-            errorToast(error.message)
-
-            await axios.delete(url + `/image/delete/${responseOfUploadImage.data.image}`, { withCredentials: true })
-          }
-        }
-
-        else {
-          throw new Error(responseOfUploadImage.data.message)
-        }
-
       }
 
-      catch (error) {
-
-        errorToast(error.message)
-        setLoading(false)
-
-        if (error.message.toLowerCase().includes("token")) {
-
-          dispatch(LogOut())
-          navigate("/login")
-        }
+      else {
+        errorToast("Invalid file, please choose an image")
       }
     }
   }

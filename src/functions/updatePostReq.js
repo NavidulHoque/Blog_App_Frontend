@@ -1,55 +1,35 @@
-/* eslint-disable no-unused-vars */
 import axios from "axios"
 import { url } from "../url"
 import successToast from "./successToast"
 import errorToast from "./errorToast"
 
-export default async function updatePostReq({postID, title, description, responseOfUploadImage, categories, updatedImageFile, currentImage, setLoading, navigate}) {
+export default async function updatePostReq({ postID, title, description, categories, updatedImageFile, currentImage, downloadURL, setLoading, navigate }) {
     try {
 
-        const responseOfPostUpdate = await axios.put(url + `/post/${postID}`,
+        const response = await axios.put(url + `/post/${postID}`,
             {
                 title,
                 description,
-                photo: (updatedImageFile ? responseOfUploadImage?.data?.image : currentImage),
+                photoURL: (updatedImageFile ? downloadURL : currentImage),
                 categories: categories.map(category => category.name),
             },
             { withCredentials: true })
 
         setLoading(false)
 
-        if (responseOfPostUpdate.data.status) {
+        if (response.data.status) {
 
-            successToast(responseOfPostUpdate.data.message)
+            successToast(response.data.message)
 
-            if (updatedImageFile) {
-
-                try {
-                    const responseOfDeleteImage = await axios.delete(url + `/image/delete/${currentImage}`, { withCredentials: true })
-
-                    if (!responseOfDeleteImage.data.status) {
-                        throw new Error("")
-                    }
-                } 
-                
-                catch (error) {
-                    navigate(`/post/${responseOfPostUpdate.data.post.postID}`)
-                }
-            }
-
-            navigate(`/post/${responseOfPostUpdate.data.post.postID}`)
+            navigate(`/post/${response.data.post.postID}`)
         }
 
         else {
-            throw new Error(responseOfPostUpdate.data.message)
+            throw new Error(response.data.message)
         }
     }
 
     catch (error) {
         errorToast(error.message)
-
-        if (updatedImageFile) {
-            await axios.delete(url + `/image/delete/${responseOfUploadImage.data.image}`, { withCredentials: true })
-        }
     }
 }

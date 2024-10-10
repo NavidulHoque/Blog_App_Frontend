@@ -6,7 +6,7 @@ import Category from "../../components/post/postDetails/Category";
 import Comment from "../../components/post/postDetails/Comment";
 import Button from "../../components/post/common/Button"
 import { useEffect, useRef, useState } from "react"
-import { imageFolder, url } from "../../url";
+import { url } from "../../url";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
@@ -19,6 +19,8 @@ import errorToast from "../../functions/errorToast";
 import socket from "../../socket";
 import successToast from "../../functions/successToast";
 import { ColorRing } from "react-loader-spinner";
+import { getStorage, ref, deleteObject } from "firebase/storage";
+
 
 const PostDetails = () => {
     const [post, setPost] = useState(null)
@@ -36,6 +38,8 @@ const PostDetails = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const isPostBelongsToLoggedInUser = (post?.userInfo?.userID === user.id)
+    const storage = getStorage();
+
 
     //fetching the post
     useEffect(() => {
@@ -207,6 +211,7 @@ const PostDetails = () => {
     }
 
     const handleDeletePost = async () => {
+
         setLoadingDeletePost(true)
 
         try {
@@ -214,31 +219,26 @@ const PostDetails = () => {
 
             if (response.data.status) {
 
-                try {
-                    const responseOfDeleteImage = await axios.delete(url + `/image/delete/${response.data.photo}`, { withCredentials: true })
+                const storageRef = ref(storage, response.data.photoURL)
 
-                    if (responseOfDeleteImage.data.status) {
+                deleteObject(storageRef)
+                    .then(() => {
 
                         setLoadingDeletePost(false)
 
                         successToast(response.data.message)
 
                         navigate("/")
-                    }
 
-                    else {
-                        throw new Error("")
-                    }
-                }
+                    })
+                    .catch((error) => {
 
-                catch (error) {
-                    //by any chance if the delete route fails to delete the image
-                    setLoadingDeletePost(false)
+                        setLoadingDeletePost(false)
 
-                    successToast(response.data.message)
+                        successToast(response.data.message)
 
-                    navigate("/")
-                }
+                        navigate("/")
+                    })
             }
 
             else {
@@ -307,7 +307,7 @@ const PostDetails = () => {
 
                             <div
                                 className="w-full md:h-[700px] sm:h-[400px] h-[300px] bg-cover bg-center"
-                                style={{ backgroundImage: `url(${imageFolder + post?.photo})` }}
+                                style={{ backgroundImage: `url(${post?.photoURL})` }}
                             >
                             </div>
 
