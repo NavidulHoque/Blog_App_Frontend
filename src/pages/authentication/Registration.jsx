@@ -43,11 +43,11 @@ const Registration = () => {
 
       if (response.data.status) {
 
-        successToast(response.data.message)
+        setLoading(false)
 
         formik.resetForm()
 
-        setLoading(false)
+        successToast(response.data.message)
 
         const timeOutID = setTimeout(() => {
           navigate("/login")
@@ -62,8 +62,8 @@ const Registration = () => {
     }
 
     catch (error){
-      errorToast(error.message)
       setLoading(false)
+      errorToast(error.message)
     }
   }
 

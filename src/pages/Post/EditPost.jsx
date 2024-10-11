@@ -14,6 +14,12 @@ import { url } from './../../url';
 import errorToast from "../../functions/errorToast";
 import updatePostReq from "../../functions/updatePostReq";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import Image from "../../components/post/common/Image";
+import FileInput from "../../components/post/common/FileInput";
+import WholeCategoryDiv from "../../components/post/common/WholeCategoryDiv";
+import CategoryInputDiv from "../../components/post/common/CategoryInputDiv";
+import CategoriesDiv from "../../components/post/common/CategoriesDiv";
+import DescriptionTextarea from "../../components/post/common/DescriptionTextarea";
 
 const EditPost = () => {
 
@@ -38,7 +44,7 @@ const EditPost = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { postID } = useParams()
-  const storage = getStorage();
+  const storage = getStorage()
 
 
   //generate url to show photoURL temporarily
@@ -113,7 +119,6 @@ const EditPost = () => {
     }
   }
 
-
   const updateBlog = async () => {
 
     if (!title) {
@@ -166,15 +171,17 @@ const EditPost = () => {
               async function updatePost(downloadURL) {
 
                 await updatePostReq({
-                  postID, 
-                  title, 
-                  description, 
-                  categories, 
-                  updatedImageFile, 
-                  currentImage, 
+                  postID,
+                  title,
+                  description,
+                  categories,
+                  updatedImageFile,
+                  currentImage,
                   downloadURL,
-                  setLoading, 
-                  navigate
+                  setLoading,
+                  navigate,
+                  dispatch,
+                  storage
                 })
               }
 
@@ -191,14 +198,15 @@ const EditPost = () => {
 
     else {
       await updatePostReq({
-        postID, 
-        title, 
-        description, 
-        categories, 
-        updatedImageFile, 
-        currentImage, 
-        setLoading, 
-        navigate
+        postID,
+        title,
+        description,
+        categories,
+        updatedImageFile,
+        currentImage,
+        setLoading,
+        navigate,
+        dispatch
       })
     }
   }
@@ -219,11 +227,10 @@ const EditPost = () => {
           handleChange={(e) => setTitle(e.target.value)}
         />
 
-        <div
-          className="sm:w-[400px] w-[300px] h-[250px] bg-cover bg-center bg-no-repeat rounded-md"
-          style={{ backgroundImage: `url(${updatedImageFile ? imageURL : currentImage})` }}
-        >
-        </div>
+        <Image
+          imageURL={updatedImageFile ? imageURL : currentImage}
+          extraStyle="sm:w-[400px] w-[300px] h-[250px]"
+        />
 
         <Button
           label="Choose an Image"
@@ -231,16 +238,14 @@ const EditPost = () => {
           handleClick={() => fileRef.current.click()}
         />
 
-        <input
-          ref={fileRef}
-          type="file"
-          onChange={(e) => setUpdatedImageFile(e.target.files[0])}
-          hidden
+        <FileInput
+          fileRef={fileRef}
+          handleChange={(e) => setUpdatedImageFile(e.target.files[0])}
         />
 
-        <div className="flex flex-col gap-y-4">
+        <WholeCategoryDiv>
 
-          <div className="flex gap-x-2">
+          <CategoryInputDiv>
 
             <Input
               type="text"
@@ -257,9 +262,9 @@ const EditPost = () => {
               handleClick={handleAddCategory}
             />
 
-          </div>
+          </CategoryInputDiv>
 
-          <div className="flex flex-wrap gap-3">
+          <CategoriesDiv>
 
             {categories.map(category => {
               return (
@@ -271,17 +276,13 @@ const EditPost = () => {
               );
             })}
 
-          </div>
+          </CategoriesDiv>
 
-        </div>
+        </WholeCategoryDiv>
 
-        <textarea
-          className="border-[2px] border-black text-[18px] rounded-lg px-4 py-2 outline-none"
-          rows={9}
-          cols={30}
-          placeholder="Enter post description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+        <DescriptionTextarea 
+          description={description}
+          handleChange={(e) => setDescription(e.target.value)} 
         />
 
         <Button

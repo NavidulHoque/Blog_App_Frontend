@@ -36,10 +36,10 @@ const Login = () => {
 
     try {
 
-      const response = await axios.post(url + "/auth/login", { 
-        email: formik.values.email, 
-        password: formik.values.password 
-      }, {withCredentials: true})
+      const response = await axios.post(url + "/auth/login", {
+        email: formik.values.email,
+        password: formik.values.password
+      }, { withCredentials: true })
 
       if (response.data.status) {
 
@@ -57,13 +57,14 @@ const Login = () => {
       }
     }
 
-    catch (error){
-      errorToast(error.message)
+    catch (error) {
       setLoading(false)
+      errorToast(error.message)
     }
   }
 
   return (
+    <>
       <MainContainer>
 
         <Form handleSubmit={formik.handleSubmit}>
@@ -85,7 +86,8 @@ const Login = () => {
         </Form>
 
       </MainContainer>
-    )
-  }
+    </>
+  )
+}
 
-  export default Login
+export default Login

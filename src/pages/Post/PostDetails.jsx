@@ -20,6 +20,8 @@ import socket from "../../socket";
 import successToast from "../../functions/successToast";
 import { ColorRing } from "react-loader-spinner";
 import { getStorage, ref, deleteObject } from "firebase/storage";
+import Image from "../../components/post/common/Image";
+import CategoriesDiv from "../../components/post/common/CategoriesDiv";
 
 
 const PostDetails = () => {
@@ -305,11 +307,10 @@ const PostDetails = () => {
 
                             </div>
 
-                            <div
-                                className="w-full md:h-[700px] sm:h-[400px] h-[300px] bg-cover bg-center"
-                                style={{ backgroundImage: `url(${post?.photoURL})` }}
-                            >
-                            </div>
+                            <Image
+                                imageURL={post?.photoURL}
+                                extraStyle="w-full md:h-[700px] sm:h-[400px] h-[300px]"
+                            />
 
                             <p>{post?.description}</p>
 
@@ -318,13 +319,13 @@ const PostDetails = () => {
 
                                 <h2 className="font-semibold self-start lg:self-center">Categories:</h2>
 
-                                <div className="flex flex-wrap gap-2">
+                                <CategoriesDiv>
 
                                     {post?.categories?.map(category => (
                                         <Category key={category._id} label={category.name} />
                                     ))}
 
-                                </div>
+                                </CategoriesDiv>
 
                             </div>
 

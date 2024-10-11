@@ -11,6 +11,12 @@ import { useNavigate } from "react-router-dom"
 import errorToast from "../../functions/errorToast"
 import successToast from "../../functions/successToast"
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import Image from "../../components/post/common/Image"
+import FileInput from "../../components/post/common/FileInput"
+import CategoriesDiv from "../../components/post/common/CategoriesDiv"
+import CategoryInputDiv from "../../components/post/common/CategoryInputDiv"
+import WholeCategoryDiv from "../../components/post/common/WholeCategoryDiv"
+import DescriptionTextarea from "../../components/post/common/DescriptionTextarea"
 
 const CreatePost = () => {
   const [imageFile, setImageFile] = useState(null)
@@ -210,11 +216,10 @@ const CreatePost = () => {
         />
 
         {imageFile && (
-          <div
-            className="sm:w-[400px] w-[300px] h-[250px] bg-cover bg-center bg-no-repeat rounded-md"
-            style={{ backgroundImage: `url(${imageURL})` }}
-          >
-          </div>
+          <Image
+            imageURL={imageURL}
+            extraStyle="sm:w-[400px] w-[300px] h-[250px]"
+          />
         )}
 
         <Button
@@ -224,16 +229,14 @@ const CreatePost = () => {
           type="button"
         />
 
-        <input
-          ref={fileRef}
-          type="file"
-          onChange={(e) => setImageFile(e.target.files[0])}
-          hidden
+        <FileInput
+          fileRef={fileRef}
+          handleChange={(e) => setImageFile(e.target.files[0])}
         />
 
-        <div className="flex flex-col gap-y-4">
+        <WholeCategoryDiv>
 
-          <div className="flex gap-x-2">
+          <CategoryInputDiv>
 
             <Input
               type="text"
@@ -250,9 +253,9 @@ const CreatePost = () => {
               handleClick={handleAddCategory}
             />
 
-          </div>
+          </CategoryInputDiv>
 
-          <div className="flex flex-wrap gap-3">
+          <CategoriesDiv>
 
             {categories.map(category => {
               return (
@@ -261,23 +264,19 @@ const CreatePost = () => {
                   category={category}
                   setCategories={setCategories}
                 />
-              );
+              )
             })}
 
-          </div>
+          </CategoriesDiv>
 
-        </div>
+        </WholeCategoryDiv>
 
-        <textarea
-          className="border-[2px] border-black text-[18px] rounded-lg px-4 py-2 outline-none"
-          rows={9}
-          cols={30}
-          placeholder="Enter post description"
-          value={description}
-          onChange={(e) => {
+        <DescriptionTextarea 
+          description={description}
+          handleChange={(e) => {
             setDescription(e.target.value)
             localStorage.setItem("descriptionOfBlogApp", JSON.stringify(e.target.value))
-          }}
+          }} 
         />
 
         <Button
