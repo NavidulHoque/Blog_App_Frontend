@@ -23,11 +23,12 @@ const Comment = ({
   updatedComment
 }) => {
 
-  const [loading, setLoading] = useState(false)
+  const [loadingDelete, setLoadingDelete] = useState(false)
   const [loadingUpdate, setLoadingUpdate] = useState(false)
   const [open, setOpen] = useState(false)
   const [editComment, setEditComment] = useState(comment?.comment)
   const [isUpdating, setIsUpdating] = useState(false)
+  const [textareaHeight, setTextareaHeight] = useState("0px")
 
   const isCommentBelongsToLoggedInUser = (comment?.userInfo?.userID === user.id)
   const dispatch = useDispatch()
@@ -42,16 +43,22 @@ const Comment = ({
 
   }, [updatedComment])
 
+  useEffect(() => {
+
+    setTextareaHeight(`${textareaRef.current.scrollHeight}px`) 
+    
+  }, [])
+  
 
   const handleDeleteComment = async () => {
-    setLoading(true)
+    setLoadingDelete(true)
 
     try {
       const response = await axios.delete(url + `/comment/${comment.commentID}`, { withCredentials: true })
 
-      setLoading(false)
 
       if (response.data.status) {
+        setLoadingDelete(false)
         setOpen(false)
       }
 
@@ -62,8 +69,8 @@ const Comment = ({
 
     catch (error) {
 
+      setLoadingDelete(false)
       errorToast(error.message)
-      setLoading(false)
 
       if (error.message.toLowerCase().includes("token")) {
 
@@ -94,8 +101,8 @@ const Comment = ({
     }
 
     catch (error) {
-      errorToast(error.message)
       setLoadingUpdate(false)
+      errorToast(error.message)
 
       if (error.message.toLowerCase().includes("token")) {
 
@@ -124,7 +131,7 @@ const Comment = ({
             </div>
 
             <div className="flex gap-x-3">
-              
+
               {isCommentBelongsToLoggedInUser ? (
                 <>
                   {isUpdating ? (
@@ -187,8 +194,10 @@ const Comment = ({
             setEditComment(e.target.value)
             autoResizeTextarea(textareaRef)
           }}
-          className={`${isUpdating ? "bg-white px-2" : "bg-gray-200"} min-h-[30px] outline-none resize-none break-words whitespace-normal overflow-hidden`}
+          style={{height: `${textareaHeight}`}}
+          className={`${isUpdating ? "bg-white px-2" : "bg-gray-200"} outline-none resize-none break-all whitespace-normal overflow-hidden`}
           readOnly={!isUpdating}
+          rows="1"
         />
 
       </div>
@@ -198,7 +207,7 @@ const Comment = ({
           <DeleteConfirmationMessage
             setOpen={setOpen}
             handleDelete={handleDeleteComment}
-            loading={loading}
+            loading={loadingDelete}
           />, document.body)}
     </>
   )

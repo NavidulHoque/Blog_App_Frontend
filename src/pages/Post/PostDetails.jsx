@@ -34,13 +34,13 @@ const PostDetails = () => {
     const [updatedComment, setUpdatedComment] = useState({})
 
     const scrollRef = useRef(null)
-    const textareaRef = useRef(null);
+    const textareaRef = useRef(null)
     const { postID } = useParams()
     const user = useSelector(state => state.UserLogin.user)
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const isPostBelongsToLoggedInUser = (post?.userInfo?.userID === user.id)
-    const storage = getStorage();
+    const storage = getStorage()
 
 
     //fetching the post
@@ -188,6 +188,7 @@ const PostDetails = () => {
                 if (response.data.status) {
                     setWriteComment("")
                     setLoadingAddComment(false)
+                    textareaRef.current.style.height = "70px"
                 }
 
                 else {
@@ -355,7 +356,7 @@ const PostDetails = () => {
                                     ref={textareaRef}
                                     type="text"
                                     placeholder="Write a comment"
-                                    className="w-full p-4 border-[2px] border-black rounded-lg outline-none resize-none break-words whitespace-normal"
+                                    className="w-full p-4 border-[2px] border-black rounded-lg outline-none resize-none break-all overflow-hidden"
                                     onChange={(e) => {
                                         setWriteComment(e.target.value)
                                         autoResizeTextarea(textareaRef)
