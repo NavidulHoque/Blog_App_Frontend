@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { LogOut } from "../../../features/slices/userLoginSlice";
 import { FaRegSave } from "react-icons/fa";
 import { BeatLoader } from "react-spinners";
-import autoResizeTextarea from "../../../functions/autoResizeTextArea";
+import autoResizeHeight from "../../../functions/autoResizeHeight";
 import { MdOutlineCancel } from "react-icons/md";
 import errorToast from "../../../functions/errorToast";
 
@@ -35,6 +35,7 @@ const Comment = ({
   const navigate = useNavigate()
   const textareaRef = useRef(null)
 
+  //to set updated comment with real time
   useEffect(() => {
 
     if (updatedComment.commentID === comment?.commentID) {
@@ -43,10 +44,26 @@ const Comment = ({
 
   }, [updatedComment])
 
+
+  //to set textarea height when reloads
   useEffect(() => {
 
     setTextareaHeight(`${textareaRef.current.scrollHeight}px`) 
-    
+
+  }, [])
+
+
+  //for window resizing purpose
+  useEffect(() => {
+
+    const handleResize = () => {
+      autoResizeHeight(textareaRef)
+    };
+
+    window.addEventListener('resize', handleResize)
+
+    return () => window.removeEventListener('resize', handleResize)
+
   }, [])
   
 
@@ -160,7 +177,7 @@ const Comment = ({
                       className="w-[20px] h-[20px] cursor-pointer"
                       onClick={() => {
                         setIsUpdating(true)
-                        autoResizeTextarea(textareaRef)
+                        autoResizeHeight(textareaRef)
                         textareaRef.current.focus()
                       }}
                     />
@@ -192,10 +209,10 @@ const Comment = ({
           value={editComment}
           onChange={(e) => {
             setEditComment(e.target.value)
-            autoResizeTextarea(textareaRef)
+            autoResizeHeight(textareaRef)
           }}
           style={{height: `${textareaHeight}`}}
-          className={`${isUpdating ? "bg-white px-2" : "bg-gray-200"} outline-none resize-none break-all whitespace-normal overflow-hidden`}
+          className={`${isUpdating ? "bg-white px-2" : "bg-gray-200"} outline-none resize-none break-words overflow-hidden`}
           readOnly={!isUpdating}
           rows="1"
         />

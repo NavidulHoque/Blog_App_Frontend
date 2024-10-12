@@ -14,7 +14,6 @@ import { Bounce, toast } from 'react-toastify';
 import { LogOut } from "../../features/slices/userLoginSlice";
 import { createPortal } from "react-dom";
 import DeleteConfirmationMessage from "../../components/post/common/DeleteConfirmationMessage";
-import autoResizeTextarea from "../../functions/autoResizeTextArea";
 import errorToast from "../../functions/errorToast";
 import socket from "../../socket";
 import successToast from "../../functions/successToast";
@@ -22,6 +21,7 @@ import { ColorRing } from "react-loader-spinner";
 import { getStorage, ref, deleteObject } from "firebase/storage";
 import Image from "../../components/post/common/Image";
 import CategoriesDiv from "../../components/post/common/CategoriesDiv";
+import autoResizeHeight from "../../functions/autoResizeHeight";
 
 
 const PostDetails = () => {
@@ -41,7 +41,6 @@ const PostDetails = () => {
     const navigate = useNavigate()
     const isPostBelongsToLoggedInUser = (post?.userInfo?.userID === user.id)
     const storage = getStorage()
-
 
     //fetching the post
     useEffect(() => {
@@ -170,6 +169,19 @@ const PostDetails = () => {
 
     }, [])
 
+    //for window resizing purpose
+    useEffect(() => {
+
+        const handleResize = () => {
+            autoResizeHeight(textareaRef)
+        };
+
+        window.addEventListener('resize', handleResize)
+
+        return () => window.removeEventListener('resize', handleResize)
+
+    }, [])
+
 
     const handleAddComment = async () => {
 
@@ -274,7 +286,7 @@ const PostDetails = () => {
 
                             <div className="flex justify-between items-center gap-x-3">
 
-                                <h1 className="text-[36px] font-semibold sm:text-left text-center">{post?.title}</h1>
+                                <h1 className="text-[36px] font-semibold">{post?.title}</h1>
 
                                 {isPostBelongsToLoggedInUser && (
 
@@ -313,7 +325,7 @@ const PostDetails = () => {
                                 extraStyle="w-full md:h-[700px] sm:h-[400px] h-[300px]"
                             />
 
-                            <p>{post?.description}</p>
+                            <p className="break-words">{post?.description}</p>
 
                             {/* Categories */}
                             <div className="flex items-center space-x-3">
@@ -359,7 +371,7 @@ const PostDetails = () => {
                                     className="w-full p-4 border-[2px] border-black rounded-lg outline-none resize-none break-all overflow-hidden"
                                     onChange={(e) => {
                                         setWriteComment(e.target.value)
-                                        autoResizeTextarea(textareaRef)
+                                        autoResizeHeight(textareaRef)
                                     }}
                                     value={writeComment}
                                     rows="1"
@@ -367,7 +379,7 @@ const PostDetails = () => {
 
                                 <Button
                                     label="Add Comment"
-                                    extraStyle="px-4 h-[70px]"
+                                    extraStyle="px-4 h-[70px] text-[20px]"
                                     handleClick={handleAddComment}
                                     loading={loadingAddComment}
                                 />

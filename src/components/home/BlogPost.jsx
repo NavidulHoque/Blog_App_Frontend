@@ -31,15 +31,15 @@ const BlogPost = ({post}) => {
 
         </div>
 
-        <p className="space-x-1 font-normal">
+        <div className="space-x-1 font-normal">
 
-          <span className="break-all">{post?.description.slice(0,280)}</span>
+          <p className="break-words">{post?.description.slice(0,280)}</p>
 
           <span className="text-blue-500 inline-block">{"..."}</span>
 
           <Link to={`${user ? `/post/${post.postID}` : "/login"}`} className="text-blue-500 cursor-pointer">Read more</Link>
 
-        </p>
+        </div>
 
       </div>
 
