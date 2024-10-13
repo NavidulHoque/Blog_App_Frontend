@@ -22,6 +22,7 @@ import { getStorage, ref, deleteObject } from "firebase/storage";
 import Image from "../../components/post/common/Image";
 import CategoriesDiv from "../../components/post/common/CategoriesDiv";
 import autoResizeHeight from "../../functions/autoResizeHeight";
+import { Helmet } from "react-helmet-async";
 
 
 const PostDetails = () => {
@@ -276,6 +277,9 @@ const PostDetails = () => {
     return (
 
         <>
+            <Helmet>
+                <title>Blog Details</title>
+            </Helmet>
 
             <div ref={scrollRef} className="min-h-[72vh] flex justify-center py-6">
 

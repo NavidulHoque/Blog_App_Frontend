@@ -17,6 +17,7 @@ import CategoriesDiv from "../../components/post/common/CategoriesDiv"
 import CategoryInputDiv from "../../components/post/common/CategoryInputDiv"
 import WholeCategoryDiv from "../../components/post/common/WholeCategoryDiv"
 import DescriptionTextarea from "../../components/post/common/DescriptionTextarea"
+import { Helmet } from "react-helmet-async"
 
 const CreatePost = () => {
   const [imageFile, setImageFile] = useState(null)
@@ -197,98 +198,104 @@ const CreatePost = () => {
 
 
   return (
-    <div className="min-h-[70.7vh] py-[11px]">
+    <>
+      <Helmet>
+        <title>Create Blog</title>
+      </Helmet>
 
-      <div className="xl:w-[85vw] w-[90vw] mx-auto flex flex-col gap-y-5">
+      <div className="min-h-[70.7vh] py-[11px]">
 
-        <Heading label="Create a post" />
+        <div className="xl:w-[85vw] w-[90vw] mx-auto flex flex-col gap-y-5">
 
-        <Input
-          type="text"
-          placeholder="Enter post title"
-          extraStyle="w-[300px] px-4 py-2"
-          name="title"
-          value={title}
-          handleChange={(e) => {
-            setTitle(e.target.value)
-            localStorage.setItem("titleOfBlogApp", JSON.stringify(e.target.value))
-          }}
-        />
+          <Heading label="Create a post" />
 
-        {imageFile && (
-          <Image
-            imageURL={imageURL}
-            extraStyle="sm:w-[400px] w-[300px] h-[250px]"
+          <Input
+            type="text"
+            placeholder="Enter post title"
+            extraStyle="w-[300px] px-4 py-2"
+            name="title"
+            value={title}
+            handleChange={(e) => {
+              setTitle(e.target.value)
+              localStorage.setItem("titleOfBlogApp", JSON.stringify(e.target.value))
+            }}
           />
-        )}
 
-        <Button
-          label="Choose an Image"
-          extraStyle="w-[200px] px-4 py-2 text-[20px]"
-          handleClick={() => fileRef.current.click()}
-          type="button"
-        />
-
-        <FileInput
-          fileRef={fileRef}
-          handleChange={(e) => setImageFile(e.target.files[0])}
-        />
-
-        <WholeCategoryDiv>
-
-          <CategoryInputDiv>
-
-            <Input
-              type="text"
-              placeholder="Enter post category"
-              extraStyle="w-[300px] px-4 py-2"
-              value={inputCategory}
-              handleChange={(e) => setInputCategory(e.target.value)}
-              handleKeyDown={(e) => e.key === "Enter" ? handleAddCategory() : ""}
+          {imageFile && (
+            <Image
+              imageURL={imageURL}
+              extraStyle="sm:w-[400px] w-[300px] h-[250px]"
             />
+          )}
 
-            <Button
-              label="Add"
-              extraStyle="px-4 py-2"
-              handleClick={handleAddCategory}
-            />
+          <Button
+            label="Choose an Image"
+            extraStyle="w-[200px] px-4 py-2 text-[20px]"
+            handleClick={() => fileRef.current.click()}
+            type="button"
+          />
 
-          </CategoryInputDiv>
+          <FileInput
+            fileRef={fileRef}
+            handleChange={(e) => setImageFile(e.target.files[0])}
+          />
 
-          <CategoriesDiv>
+          <WholeCategoryDiv>
 
-            {categories.map(category => {
-              return (
-                <CreatedCategories
-                  key={category._id}
-                  category={category}
-                  setCategories={setCategories}
-                />
-              )
-            })}
+            <CategoryInputDiv>
 
-          </CategoriesDiv>
+              <Input
+                type="text"
+                placeholder="Enter post category"
+                extraStyle="w-[300px] px-4 py-2"
+                value={inputCategory}
+                handleChange={(e) => setInputCategory(e.target.value)}
+                handleKeyDown={(e) => e.key === "Enter" ? handleAddCategory() : ""}
+              />
 
-        </WholeCategoryDiv>
+              <Button
+                label="Add"
+                extraStyle="px-4 py-2"
+                handleClick={handleAddCategory}
+              />
 
-        <DescriptionTextarea 
-          description={description}
-          handleChange={(e) => {
-            setDescription(e.target.value)
-            localStorage.setItem("descriptionOfBlogApp", JSON.stringify(e.target.value))
-          }} 
-        />
+            </CategoryInputDiv>
 
-        <Button
-          label="Create Blog"
-          extraStyle="self-center w-[200px] py-3"
-          handleClick={createNewPost}
-          loading={loading}
-        />
+            <CategoriesDiv>
+
+              {categories.map(category => {
+                return (
+                  <CreatedCategories
+                    key={category._id}
+                    category={category}
+                    setCategories={setCategories}
+                  />
+                )
+              })}
+
+            </CategoriesDiv>
+
+          </WholeCategoryDiv>
+
+          <DescriptionTextarea
+            description={description}
+            handleChange={(e) => {
+              setDescription(e.target.value)
+              localStorage.setItem("descriptionOfBlogApp", JSON.stringify(e.target.value))
+            }}
+          />
+
+          <Button
+            label="Create Blog"
+            extraStyle="self-center w-[200px] py-3"
+            handleClick={createNewPost}
+            loading={loading}
+          />
+
+        </div>
 
       </div>
-
-    </div>
+    </>
   )
 }
 

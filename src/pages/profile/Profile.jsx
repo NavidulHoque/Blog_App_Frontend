@@ -13,6 +13,7 @@ import axios from "axios";
 import { url } from "../../url";
 import { LogIn } from "../../features/slices/userLoginSlice";
 import successToast from "../../functions/successToast";
+import { Helmet } from "react-helmet-async";
 
 const Profile = () => {
     const [willChangePassword, setWillChangePassword] = useState(false)
@@ -76,130 +77,136 @@ const Profile = () => {
     }
 
     return (
-        <div className="min-h-[72vh] flex justify-center items-center py-4">
+        <>
+            <Helmet>
+                <title>Profile</title>
+            </Helmet>
+            
+            <div className="min-h-[72vh] flex justify-center items-center py-4">
 
-            <div className="xl:w-[85vw] w-[90vw] mx-auto flex flex-col gap-y-7">
+                <div className="xl:w-[85vw] w-[90vw] mx-auto flex flex-col gap-y-7">
 
-                <form
-                    className="bg-slate-100 self-center sm:w-[600px] w-[320px] text-[22px] flex flex-col p-4 rounded-lg"
-                    onSubmit={formik.handleSubmit}
-                >
+                    <form
+                        className="bg-slate-100 self-center sm:w-[600px] w-[320px] text-[22px] flex flex-col p-4 rounded-lg"
+                        onSubmit={formik.handleSubmit}
+                    >
 
-                    <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center">
 
-                        <Heading label="Profile" />
+                            <Heading label="Profile" />
 
-                        <div className="flex flex-col items-center space-y-1 text-slate-600">
+                            <div className="flex flex-col items-center space-y-1 text-slate-600">
 
-                            <span>Last Updated</span>
-                            <span>{formatDistance(user.updatedAt, new Date(), { addSuffix: true })}</span>
+                                <span>Last Updated</span>
+                                <span>{formatDistance(user.updatedAt, new Date(), { addSuffix: true })}</span>
+
+                            </div>
 
                         </div>
 
-                    </div>
+                        <div className="flex flex-col gap-y-3 my-4">
 
-                    <div className="flex flex-col gap-y-3 my-4">
+                            <label htmlFor="email">Email Address</label>
 
-                        <label htmlFor="email">Email Address</label>
+                            <Input
+                                type="email"
+                                placeholder="email"
+                                extraStyle="w-full px-4 py-2"
+                                name="email"
+                                id="email"
+                                value={formik.values.email}
+                                handleChange={formik.handleChange}
+                            />
 
-                        <Input
-                            type="email"
-                            placeholder="email"
-                            extraStyle="w-full px-4 py-2"
-                            name="email"
-                            id="email"
-                            value={formik.values.email}
-                            handleChange={formik.handleChange}
-                        />
+                            <ErrorMessage formik={formik} name="email" />
 
-                        <ErrorMessage formik={formik} name="email" />
+                        </div>
 
-                    </div>
+                        <div className="flex flex-col gap-y-3 mb-4">
 
-                    <div className="flex flex-col gap-y-3 mb-4">
+                            <label htmlFor="username">Username</label>
 
-                        <label htmlFor="username">Username</label>
+                            <Input
+                                type="text"
+                                placeholder="username"
+                                extraStyle="w-full px-4 py-2"
+                                name="username"
+                                id="username"
+                                value={formik.values.username}
+                                handleChange={formik.handleChange}
+                            />
 
-                        <Input
-                            type="text"
-                            placeholder="username"
-                            extraStyle="w-full px-4 py-2"
-                            name="username"
-                            id="username"
-                            value={formik.values.username}
-                            handleChange={formik.handleChange}
-                        />
+                            <ErrorMessage formik={formik} name="username" />
 
-                        <ErrorMessage formik={formik} name="username" />
+                        </div>
 
-                    </div>
+                        <div className="flex flex-col gap-y-3 mb-4">
 
-                    <div className="flex flex-col gap-y-3 mb-4">
+                            <label>Joined</label>
 
-                        <label>Joined</label>
+                            <input
+                                type="text"
+                                className="text-[18px] px-4 py-2 rounded-lg outline-none"
+                                value={new Date(user.createdAt).toLocaleDateString()}
+                                readOnly
+                            />
 
-                        <input
-                            type="text"
-                            className="text-[18px] px-4 py-2 rounded-lg outline-none"
-                            value={new Date(user.createdAt).toLocaleDateString()}
-                            readOnly
-                        />
+                        </div>
 
-                    </div>
+                        <span
+                            className="self-start flex items-center gap-x-1 text-blue-500 text-underline cursor-pointer mb-4"
+                            onClick={() => setWillChangePassword(prev => !prev)}
+                        >
+                            <FaKey /> Change Password
+                        </span>
 
-                    <span
-                        className="self-start flex items-center gap-x-1 text-blue-500 text-underline cursor-pointer mb-4"
-                        onClick={() => setWillChangePassword(prev => !prev)}
-                    >
-                        <FaKey /> Change Password
-                    </span>
+                        <div className={`${willChangePassword ? "h-[230px] opacity-100 mb-2" : "h-0 opacity-0"} overflow-hidden transition-all duration-300 flex flex-col gap-y-2`}>
 
-                    <div className={`${willChangePassword ? "h-[230px] opacity-100 mb-2" : "h-0 opacity-0"} overflow-hidden transition-all duration-300 flex flex-col gap-y-2`}>
+                            <label htmlFor="currentPassword" className="h-[32px]">Current Password</label>
 
-                        <label htmlFor="currentPassword" className="h-[32px]">Current Password</label>
+                            <Input
+                                type="password"
+                                placeholder="enter your current password"
+                                extraStyle="w-full px-4 py-2 h-[52px]"
+                                name="currentPassword"
+                                id="currentPassword"
+                                value={formik.values.currentPassword}
+                                handleChange={formik.handleChange}
+                            />
 
-                        <Input
-                            type="password"
-                            placeholder="enter your current password"
-                            extraStyle="w-full px-4 py-2 h-[52px]"
-                            name="currentPassword"
-                            id="currentPassword"
-                            value={formik.values.currentPassword}
-                            handleChange={formik.handleChange}
-                        />
+                            <label htmlFor="newPassword" className="h-[32px]">New Password</label>
 
-                        <label htmlFor="newPassword" className="h-[32px]">New Password</label>
+                            <Input
+                                type="password"
+                                placeholder="enter your new password"
+                                extraStyle="w-full px-4 py-2 h-[52px]"
+                                name="newPassword"
+                                id="newPassword"
+                                value={formik.values.newPassword}
+                                handleChange={formik.handleChange}
+                            />
 
-                        <Input
-                            type="password"
-                            placeholder="enter your new password"
-                            extraStyle="w-full px-4 py-2 h-[52px]"
-                            name="newPassword"
-                            id="newPassword"
-                            value={formik.values.newPassword}
-                            handleChange={formik.handleChange}
-                        />
+                            <ErrorMessage formik={formik} name="newPassword" />
 
-                        <ErrorMessage formik={formik} name="newPassword" />
+                        </div>
 
-                    </div>
+                        <div className="flex gap-x-2">
 
-                    <div className="flex gap-x-2">
+                            <Button
+                                label="Update"
+                                extraStyle="px-4 py-2"
+                                type="submit"
+                                loading={loading}
+                            />
 
-                        <Button
-                            label="Update"
-                            extraStyle="px-4 py-2"
-                            type="submit"
-                            loading={loading}
-                        />
+                        </div>
 
-                    </div>
+                    </form>
 
-                </form>
+                </div>
 
             </div>
-
-        </div>
+        </>
     )
 }
 

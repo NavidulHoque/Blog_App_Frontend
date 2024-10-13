@@ -14,6 +14,7 @@ import ErrorMessage from "../../components/authentication/ErrorMessage"
 import axios from "axios"
 import { useState } from "react"
 import errorToast from "../../functions/errorToast"
+import { Helmet } from "react-helmet-async";
 
 const Login = () => {
   const dispatch = useDispatch()
@@ -65,6 +66,10 @@ const Login = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Login</title>
+      </Helmet>
+      
       <MainContainer>
 
         <Form handleSubmit={formik.handleSubmit}>

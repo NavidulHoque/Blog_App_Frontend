@@ -9,6 +9,7 @@ import { ColorRing } from 'react-loader-spinner'
 import { useLocation } from "react-router-dom";
 import errorToast from "../../functions/errorToast";
 import socket from "../../socket";
+import { Helmet } from "react-helmet-async";
 
 const Home = () => {
   const dispatch = useDispatch()
@@ -87,32 +88,38 @@ const Home = () => {
 
 
   return (
-    <div className="min-h-[72vh] py-6">
+    <>
+      <Helmet>
+        <title>Home</title>
+      </Helmet>
 
-      <div className="xl:w-[85vw] w-[90vw] mx-auto flex flex-col justify-center items-center space-y-10">
+      <div className="min-h-[72vh] py-6">
 
-        {isLoading ? (
-          <ColorRing
-            visible={true}
-            height="100"
-            width="100"
-            ariaLabel="color-ring-loading"
-            wrapperStyle={{}}
-            wrapperClass="color-ring-wrapper"
-            colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-          />
-        )
-          :
-          arePostsAvailable ? posts.map(post => (
-            <BlogPost key={post.postID} post={post} />
-          )) : (
-            <h1 className="pt-5 text-[30px]">No Posts Found</h1>
+        <div className="xl:w-[85vw] w-[90vw] mx-auto flex flex-col justify-center items-center space-y-10">
+
+          {isLoading ? (
+            <ColorRing
+              visible={true}
+              height="100"
+              width="100"
+              ariaLabel="color-ring-loading"
+              wrapperStyle={{}}
+              wrapperClass="color-ring-wrapper"
+              colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+            />
           )
-        }
+            :
+            arePostsAvailable ? posts.map(post => (
+              <BlogPost key={post.postID} post={post} />
+            )) : (
+              <h1 className="pt-5 text-[30px]">No Posts Found</h1>
+            )
+          }
+
+        </div>
 
       </div>
-
-    </div>
+    </>
   )
 }
 

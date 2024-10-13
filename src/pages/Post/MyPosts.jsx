@@ -8,6 +8,7 @@ import { url } from "../../url"
 import { emptyPosts, fetchPosts, toggleLoading, togglePostsAvailability } from "../../features/slices/postsSlice"
 import { ColorRing } from "react-loader-spinner"
 import errorToast from "../../functions/errorToast"
+import { Helmet } from "react-helmet-async"
 
 const MyPosts = () => {
     const posts = useSelector(state => state.posts.posts)
@@ -27,11 +28,11 @@ const MyPosts = () => {
 
                 if (location.search) {
 
-                    response = await axios.get(url + `/post/posts/${user.id + location.search}`, {withCredentials: true})
+                    response = await axios.get(url + `/post/posts/${user.id + location.search}`, { withCredentials: true })
                 }
 
                 else {
-                    response = await axios.get(url + `/post/posts/${user.id}`, {withCredentials: true})
+                    response = await axios.get(url + `/post/posts/${user.id}`, { withCredentials: true })
                 }
 
                 if (response.data.status) {
@@ -46,7 +47,7 @@ const MyPosts = () => {
 
             }
 
-            catch (error){
+            catch (error) {
                 dispatch(emptyPosts())
                 dispatch(toggleLoading(false))
                 dispatch(togglePostsAvailability(false))
@@ -68,38 +69,44 @@ const MyPosts = () => {
     }
 
     return (
-        <div className="min-h-[72vh] py-6">
+        <>
+            <Helmet>
+                <title>My Posts</title>
+            </Helmet>
 
-            <div className="xl:w-[85vw] w-[90vw] mx-auto flex flex-col justify-center items-center gap-y-10">
+            <div className="min-h-[72vh] py-6">
 
-                <Heading 
-                    label="My Posts:" 
-                    extraStyle="self-start cursor-pointer" 
-                    handleClick={handleTraverse}
-                />
+                <div className="xl:w-[85vw] w-[90vw] mx-auto flex flex-col justify-center items-center gap-y-10">
 
-                {isLoading ? (
-                    <ColorRing
-                        visible={true}
-                        height="100"
-                        width="100"
-                        ariaLabel="color-ring-loading"
-                        wrapperStyle={{}}
-                        wrapperClass="color-ring-wrapper"
-                        colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+                    <Heading
+                        label="My Posts:"
+                        extraStyle="self-start cursor-pointer"
+                        handleClick={handleTraverse}
                     />
-                )
-                    :
-                    arePostsAvailable ? posts.map(post => (
-                        <BlogPost key={post.postID} post={post} />
-                    )) : (
-                        <h1 className="pt-5 text-[30px]">No Posts Found</h1>
+
+                    {isLoading ? (
+                        <ColorRing
+                            visible={true}
+                            height="100"
+                            width="100"
+                            ariaLabel="color-ring-loading"
+                            wrapperStyle={{}}
+                            wrapperClass="color-ring-wrapper"
+                            colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+                        />
                     )
-                }
+                        :
+                        arePostsAvailable ? posts.map(post => (
+                            <BlogPost key={post.postID} post={post} />
+                        )) : (
+                            <h1 className="pt-5 text-[30px]">No Posts Found</h1>
+                        )
+                    }
+
+                </div>
 
             </div>
-
-        </div>
+        </>
     )
 }
 

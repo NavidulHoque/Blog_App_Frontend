@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import successToast from "../../functions/successToast";
 import errorToast from "../../functions/errorToast";
+import { Helmet } from "react-helmet-async";
 
 const Registration = () => {
   const [loading, setLoading] = useState(false)
@@ -61,38 +62,44 @@ const Registration = () => {
       }
     }
 
-    catch (error){
+    catch (error) {
       setLoading(false)
       errorToast(error.message)
     }
   }
 
   return (
-    <MainContainer>
+    <>
+      <Helmet>
+        <title>Registration</title>
+      </Helmet>
+      
+      <MainContainer>
 
-      <Form handleSubmit={formik.handleSubmit}>
+        <Form handleSubmit={formik.handleSubmit}>
 
-        <Heading label="Create an account" />
+          <Heading label="Create an account" />
 
-        <Input formik={formik} type="text" name="username" />
+          <Input formik={formik} type="text" name="username" />
 
-        <ErrorMessage formik={formik} name="username" />
+          <ErrorMessage formik={formik} name="username" />
 
-        <Input formik={formik} type="email" name="email" />
+          <Input formik={formik} type="email" name="email" />
 
-        <ErrorMessage formik={formik} name="email" />
+          <ErrorMessage formik={formik} name="email" />
 
-        <Input formik={formik} type="password" name="password" />
+          <Input formik={formik} type="password" name="password" />
 
-        <ErrorMessage formik={formik} name="password" />
+          <ErrorMessage formik={formik} name="password" />
 
-        <Button loading={loading} label="Register" />
+          <Button loading={loading} label="Register" />
 
-        <AskingToRedirect asking="Already have an account?" path="login" label="Login" />
+          <AskingToRedirect asking="Already have an account?" path="login" label="Login" />
 
-      </Form>
+        </Form>
 
-    </MainContainer>
+      </MainContainer>
+    </>
   )
 }
 
